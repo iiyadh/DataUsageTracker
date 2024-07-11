@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Usage Tracker</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.css" />
+  </head>
+<body>
+  <canvas id="c"></canvas>
+  <header>
+    <h1>Data Usage Tracker</h1>
+      <button type="submit" id="logout" class="button-49" role="button" onclick="close();">Exit</button>
+  </header>
+  <main>
+    <div class="leftside">
+    <table>
+      <caption>Packets Sizes</caption>
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>MAC Address Ethernet</th>
+            <th>Packets Size (MB)</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+  </div>
+  <div class="rightside">
+    <div class="top">
+      <h1>My Net Infos</h1>
+      <div class="infos">
+        <span><p>Duration&nbsp;</p><p class="box-x x dur">0</p></span>
+        <span><p>Consumption Rate &nbsp;</p><p class="box-x x rate">0</p></span>
+        <span><p>Usage per MB&nbsp;</p><p class="box-x x usa odometer">0</p></span>
+      </div>
+    </div>
+    
+    <div class="bottom">
+      <input type="radio" id="tab1" name="tab"  checked />
+      <label for="tab1">Usage limit</label>
+      <div class="tab-content">
+        {% if limita!=0 %}
+        <form method="post" action="{{url_for('remove_limit')}}" id="myForm2">
+          <div class="main">
+            <label for="f">Enter Data with MB</label>
+            <input type="number" id="mylimiter" disabled class="box-x lim">
+            <input type="submit" value="Cancel">
+          </div>
+        </form>
+      {% else %}
+      <form method="post" action="{{ url_for('set_limit') }}" id="myForm2" >
+        <div class="main">
+          <label for="f">Enter Data with MB</label>
+          <input type="number" name="myInput2" id="myInput2" value="0" >
+          <input type="submit" value="Remind Me" onclick="Check_Me();">
+        </div>
+      </form>
+      {% endif %}
+    </div>
+
+    <input type="radio" id="tab2" name="tab">
+    <label for="tab2" id="bb">Data Usage Prediction</label>
+    <div class="tab-content">
+        <form action="" id="myForm">
+          <div class="main">
+            <label for="f">Enter Time with Minutes</label>
+            <input type="number" name="myInput" id="myInput">
+            <input type="button" value="Calculate" onclick="
+            let minu = document.forms['myForm']['myInput'].value;
+            let snap = Number(document.querySelector('.rate').textContent.split(' ')[0]);
+            setTimeout(()=>{
+              let dataSnap = snap - Number(document.querySelector('.rate').textContent.split(' ')[0]);
+              alert(`You Probably gonna consume ${minu*(snap + dataSnap)} MB in ${minu} Minutes`)
+            },1000);">
+          </div>
+        </form>
+    </div>
+  </div>
+  </main>
+  <script>
+    setInterval(()=>{
+      var x = document.forms['myForm2']['mylimiter'].value;
+      if(Number(x) === 0){
+        const notification = new Notification("Data Usage Tracker",{
+        body:"you have passed the limit"});
+      }
+    },900)
+  </script>
+  <script>
+  function Check_Me(){
+   let val = document.forms['myForm2']['myInput2'].value;
+   if (Number(val) <= 0 ) {
+    alert("invalid input");
+    return false;
+   }
+  }
+  </script>
+<script src="{{url_for('static',filename='update.js')}}"></script>
+<script src="{{url_for('static',filename='updateown.js')}}"></script>
+<script src="{{url_for('static',filename='background.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/odometer.min.js"></script>
+</body>
+</html>
